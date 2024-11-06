@@ -11,14 +11,6 @@ export const asyncloadtv = (id) => async (dispatch, getState) => {
         const translations = await axios.get(`/tv/${id}/translations`);
         const videos = await axios.get(`/tv/${id}/videos`);
         const watchproviders = await axios.get(`/tv/${id}/watch/providers`);
-
-        // Find official trailer first, fallback to any trailer
-        const trailer = videos.data.results.find(
-            v => v.type === "Trailer" && v.official
-        ) || videos.data.results.find(
-            v => v.type === "Trailer"
-        );
-
         let theultimatedetails = {
             detail: detail.data,
             externalid: externalid.data,
@@ -27,7 +19,7 @@ export const asyncloadtv = (id) => async (dispatch, getState) => {
             translations: translations.data.translations.map(
                 (t) => t.english_name
             ),
-            videos: trailer || null,
+            videos: videos.data.results.find((m) => m.type === "Trailer"),
             watchproviders: watchproviders.data.results.IN,
         };
 
