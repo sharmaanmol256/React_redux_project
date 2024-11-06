@@ -12,7 +12,7 @@ const Home = () => {
     const [wallpaper, setwallpaper] = useState(null);
     const [trending, settrending] = useState(null);
     const [category, setcategory] = useState("all");
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     const GetHeaderWallpaper = async () => {
         try {
@@ -40,59 +40,54 @@ const Home = () => {
     }, [category]);
 
     return wallpaper && trending ? (
-        <div className="flex h-screen bg-black overflow-hidden">
-            {/* Sidebar toggle for mobile */}
-            <div className="lg:hidden fixed top-4 left-4 z-50">
-                <button
-                    onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-                    className="p-2 text-white"
-                >
-                    <i className={`ri-${isSidebarOpen ? 'close' : 'menu'}-line text-xl`}></i>
-                </button>
-            </div>
+        <div className="flex flex-col md:flex-row w-full min-h-screen bg-black">
+            {/* Mobile Menu Button */}
+            <button 
+                className="md:hidden fixed top-4 left-4 z-50 text-white bg-[#6556CD] p-2 rounded-full"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            >
+                <i className={`ri-${isMobileMenuOpen ? 'close' : 'menu'}-line text-2xl`}></i>
+            </button>
 
-            {/* Sidebar */}
-            <div className={`fixed lg:relative lg:block w-[20%] h-screen bg-black z-40 transform transition-transform duration-300 ${
-                isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
-            }`}>
+            {/* Sidenav - Hidden on mobile by default, shown when menu is opened */}
+            <div className={`${isMobileMenuOpen ? 'fixed inset-0 z-40 bg-black/90' : 'hidden'} md:block md:w-[20%]`}>
                 <Sidenav />
             </div>
 
             {/* Main Content */}
-            <main className="flex-1 h-screen overflow-y-auto overflow-x-hidden">
-                {/* Topnav */}
+            <div className="w-full md:w-[80%] h-full overflow-auto overflow-x-hidden">
+                {/* Top Navigation */}
                 <div className="sticky top-0 z-30 bg-black/50 backdrop-blur-sm">
                     <Topnav />
                 </div>
 
-                {/* Header */}
-                <Header data={wallpaper} />
+                {/* Header Section */}
+                <div className="w-full">
+                    <Header data={wallpaper} />
+                </div>
 
                 {/* Trending Section */}
-                <div className="px-5">
-                    <div className="flex justify-between items-center py-5">
-                        <h1 className="text-3xl font-semibold text-zinc-400">
+                <div className="px-4 md:px-5">
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 py-5">
+                        <h1 className="text-2xl md:text-3xl font-semibold text-zinc-400">
                             Trending
                         </h1>
-                        <Dropdown
-                            title="Filter"
-                            options={["tv", "movie", "all"]}
-                            func={(e) => setcategory(e.target.value)}
-                        />
+
+                        <div className="w-full sm:w-auto">
+                            <Dropdown
+                                title="Filter"
+                                options={["tv", "movie", "all"]}
+                                func={(e) => setcategory(e.target.value)}
+                            />
+                        </div>
                     </div>
 
-                    {/* Horizontal Cards */}
-                    <HorizontalCards data={trending} />
+                    {/* Horizontal Cards Section */}
+                    <div className="w-full overflow-hidden">
+                        <HorizontalCards data={trending} />
+                    </div>
                 </div>
-            </main>
-
-            {/* Overlay for mobile sidebar */}
-            {isSidebarOpen && (
-                <div
-                    className="lg:hidden fixed inset-0 bg-black/50 z-30"
-                    onClick={() => setIsSidebarOpen(false)}
-                />
-            )}
+            </div>
         </div>
     ) : (
         <Loading />
